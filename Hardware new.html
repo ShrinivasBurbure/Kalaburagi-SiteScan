@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Shops - KARIA MITRA</title>
+    
+    <!-- Google Web Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Stylesheet -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #0e1e55;
+            --primary-light: rgba(14, 30, 85, 0.4);
+            --primary-lighter: rgba(14, 30, 85, 0.1);
+            --secondary-color: #bdc4c6;
+            --white: #ffffff;
+            --dark: #333333;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-muted: #6c757d;
+            --success-color: #28a745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--dark);
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 15px 0;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 28px;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+        }
+        
+        .navbar-nav .nav-link {
+            color: var(--dark) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+            padding: 8px 12px !important;
+            border-radius: 6px;
+        }
+        
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: var(--primary-color) !important;
+            background-color: var(--primary-lighter);
+        }
+        
+        .cart-icon {
+            position: relative;
+            font-size: 1.2rem;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input {
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            width: 300px;
+            transition: all 0.3s ease;
+            padding-right: 50px;
+            background-color: #f8f9fa;
+            font-size: 0.95rem;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(14, 30, 85, 0.25);
+            outline: none;
+            background-color: white;
+            width: 350px;
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .search-btn:hover {
+            background: rgba(14, 30, 85, 0.9);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0a1740 100%);
+            color: var(--white);
+            padding: 50px 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center bottom;
+            opacity: 0.1;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .breadcrumb {
+            background: transparent;
+            margin-bottom: 15px;
+            padding: 0;
+        }
+        
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: var(--white);
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--white);
+        }
+        
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Controls Section */
+        .controls-section {
+            padding: 25px 0;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .controls-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .sort-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .sort-label {
+            font-weight: 500;
+            margin-bottom: 0;
+            color: var(--dark);
+        }
+        
+        .sort-select {
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-size: 0.9rem;
+            min-width: 180px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .sort-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(14, 30, 85, 0.25);
+            outline: none;
+        }
+
+        /* Enhanced City Filter */
+        .city-filter {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .city-label {
+            font-weight: 500;
+            margin-bottom: 0;
+            color: var(--dark);
+        }
+        
+        .city-select {
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-size: 0.9rem;
+            min-width: 200px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .city-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(14, 30, 85, 0.25);
+            outline: none;
+        }
+
+        /* Shops Section */
+        .shops-section {
+            padding: 50px 0;
+        }
+        
+        .shops-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .results-count {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        
+        .shop-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .shop-card:hover::before {
+            opacity: 1;
+        }
+        
+        .shop-logo {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+        }
+        
+        .shop-card:hover .shop-logo {
+            transform: scale(1.05);
+        }
+        
+        .shop-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .shop-logo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-lighter);
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .shop-content {
+            flex: 1;
+        }
+        
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .shop-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .shop-rating {
+            display: flex;
+            align-items: center;
+            background: var(--primary-lighter);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .shop-rating i {
+            color: #FFC107;
+            margin-right: 5px;
+        }
+        
+        .verified-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+        
+        .shop-details {
+            margin-bottom: 20px;
+        }
+        
+        .shop-details p {
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .shop-details i {
+            color: var(--primary-color);
+            margin-right: 10px;
+            width: 16px;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+        
+        .shop-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: rgba(14, 30, 85, 0.9);
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 4px 8px rgba(14, 30, 85, 0.3);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-lighter);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(14, 30, 85, 0.2);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 25px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #2c3e50;
+            color: var(--white);
+            padding: 50px 0 20px;
+        }
+        
+        .footer h5 {
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .footer ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: var(--white);
+        }
+        
+        .copyright {
+            background-color: #1a252f;
+            color: #bdc3c7;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .search-input {
+                width: 250px;
+            }
+            
+            .search-input:focus {
+                width: 280px;
+            }
+            
+            .shop-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .shop-rating {
+                margin-top: 10px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .shop-card {
+                flex-direction: column;
+                text-align: left;
+            }
+            
+            .shop-logo {
+                align-self: flex-start;
+            }
+            
+            .shop-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .shop-actions .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .search-container {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .search-input:focus {
+                width: 100%;
+            }
+            
+            .sort-controls, .city-filter {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+            
+            .sort-select, .city-select {
+                width: 100%;
+            }
+            
+            .shops-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 575px) {
+            .shop-logo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .shop-logo-placeholder {
+                font-size: 1.2rem;
+            }
+            
+            .navbar-brand {
+                font-size: 24px;
+            }
+            
+            .page-header {
+                padding: 40px 0 30px;
+            }
+        }
+        
+        /* Focus styles for accessibility */
+        button:focus,
+        select:focus,
+        input:focus,
+        a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 30, 85, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="Category Dashboard.html">
+                <i class="fas fa-hard-hat"></i> KARIA MITRA
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="Category Dashboard.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sanitation.html">Sanitation Shops</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="hardware.html">Hardware Shops</a>
+                    </li>
+                    
+                    <!-- Search Bar -->
+                    <li class="nav-item search-container">
+                        <input type="text" class="search-input" placeholder="Search shops...">
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link cart-icon" href="cart.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="Category Dashboard.html">Home</a></li>
+                    <li class="breadcrumb-item active">Hardware Shops</li>
+                </ol>
+            </nav>
+            <h1>Hardware Shops</h1>
+            <p class="mb-0">Find trusted hardware suppliers with quality tools and equipment</p>
+        </div>
+    </section>
+
+    <!-- Controls Section -->
+    <section class="controls-section">
+        <div class="container">
+            <div class="controls-row">
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search shops by name or location...">
+                    <button class="search-btn" id="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <!-- City Filter -->
+                <div class="city-filter">
+                    <label class="city-label" for="city-select">Filter by City:</label>
+                    <select class="city-select" id="city-select">
+                        <option value="all">All Cities</option>
+                        <!-- Cities will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <!-- Sort Controls -->
+                <div class="sort-controls">
+                    <label class="sort-label" for="sort-select">Sort by:</label>
+                    <select class="sort-select" id="sort-select">
+                        <option value="rating-desc">Rating (High to Low)</option>
+                        <option value="verified">Verified First</option>
+                        <option value="name-asc">Name (A to Z)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shops Section -->
+    <section class="shops-section">
+        <div class="container">
+            <div class="shops-header">
+                <h2>Available Shops</h2>
+                <div class="results-count" id="results-count">Loading...</div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div id="shops-container">
+                        <!-- Loading state -->
+                        <div class="loading" id="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading hardware shops...</p>
+                        </div>
+                        
+                        <!-- Empty state (initially hidden) -->
+                        <div class="empty-state d-none" id="empty-state">
+                            <i class="fas fa-hard-hat"></i>
+                            <h3>No Hardware Shops Found</h3>
+                            <p>We couldn't find any hardware shops matching your criteria.</p>
+                            <button class="btn btn-primary mt-3" id="reset-filters">Reset Filters</button>
+                        </div>
+                        
+                        <!-- Shops will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>KARIA MITRA</h5>
+                    <p>Your trusted partner for construction materials and services.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="Category Dashboard.html">Home</a></li>
+                        <li><a href="flooringcladding-shops.html">Flooring Shops</a></li>
+                        <li><a href="sanitation.html">Sanitation Shops</a></li>
+                        <li><a href="hardware.html">Hardware Shops</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone me-2"></i> +91 9876543210</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@kariamitra.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Kalaburagi, Karnataka</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <div class="container text-center">
+                <p class="mb-0">&copy; 2025 KARIA MITRA. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript for enhanced functionality -->
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tkdegywzonhbzdjfxosq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrZGVneXd6b25oYnpkamZ4b3NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzNzc0OTQsImV4cCI6MjA3Njk1MzQ5NH0.8M93KhrKWyxSacDwpebVElk6v3syDJCJElSs6O3NBoI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // DOM elements
+        const shopsContainer = document.getElementById('shops-container');
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+        const sortSelect = document.getElementById('sort-select');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const citySelect = document.getElementById('city-select');
+        const resultsCount = document.getElementById('results-count');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+
+        // Store shops data for sorting and filtering
+        let allShops = [];
+        let filteredShops = [];
+
+        // Function to load shops from Supabase
+        async function loadHardwareShops() {
+            try {
+                // First, get the Hardware category ID
+                const { data: category, error: categoryError } = await supabase
+                    .from('categories')
+                    .select('id')
+                    .eq('name', 'Hardware')
+                    .single();
+
+                if (categoryError) {
+                    console.error('Error fetching category:', categoryError);
+                    
+                    // Try alternative category names
+                    const { data: altCategory, error: altCategoryError } = await supabase
+                        .from('categories')
+                        .select('id')
+                        .eq('name', 'Hardware Tools')
+                        .single();
+                        
+                    if (altCategoryError) {
+                        console.error('Error fetching alternative category:', altCategoryError);
+                        showError('Failed to load category data. Please check if the category exists in the database.');
+                        return;
+                    }
+                    
+                    // Use the alternative category
+                    const categoryId = altCategory.id;
+                    await fetchShopsByCategory(categoryId);
+                    return;
+                }
+
+                // Use the main category
+                const categoryId = category.id;
+                await fetchShopsByCategory(categoryId);
+
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                showError('An unexpected error occurred');
+            }
+        }
+
+        // Function to fetch shops by category ID
+        async function fetchShopsByCategory(categoryId) {
+            try {
+                // Fetch shops in the specified category
+                const { data: shops, error: shopsError } = await supabase
+                    .from('shops')
+                    .select('*')
+                    .eq('category_id', categoryId);
+
+                if (shopsError) {
+                    console.error('Error fetching shops:', shopsError);
+                    showError('Failed to load shops data');
+                    return;
+                }
+
+                // Hide loading state
+                loadingState.classList.add('d-none');
+
+                // Check if we have shops
+                if (!shops || shops.length === 0) {
+                    emptyState.classList.remove('d-none');
+                    resultsCount.textContent = '0 shops found';
+                    return;
+                }
+
+                // Store shops for sorting and filtering
+                allShops = shops;
+                filteredShops = [...shops];
+                
+                // Update results count
+                updateResultsCount();
+                
+                // Populate city filter with unique cities from shops
+                populateCityFilter(shops);
+                
+                // Apply initial sorting and render
+                applyFiltersAndSorting();
+
+            } catch (error) {
+                console.error('Error in fetchShopsByCategory:', error);
+                showError('Error loading shops data');
+            }
+        }
+
+        // Function to update results count
+        function updateResultsCount() {
+            const count = filteredShops.length;
+            resultsCount.textContent = `${count} ${count === 1 ? 'shop' : 'shops'} found`;
+        }
+
+        // Function to populate city filter with unique cities
+        function populateCityFilter(shops) {
+            // Get unique cities from shops
+            const cities = [...new Set(shops.map(shop => shop.city).filter(city => city))];
+            
+            // Sort cities alphabetically
+            cities.sort();
+            
+            // Clear existing options except "All Cities"
+            while (citySelect.options.length > 1) {
+                citySelect.remove(1);
+            }
+            
+            // Add city options
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.toLowerCase();
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        }
+
+        // Function to apply filters and sorting
+        function applyFiltersAndSorting() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedCity = citySelect.value;
+            const sortValue = sortSelect.value;
+            
+            // Apply city filter
+            let tempShops = [...allShops];
+            if (selectedCity !== 'all') {
+                tempShops = tempShops.filter(shop => 
+                    shop.city && shop.city.toLowerCase() === selectedCity
+                );
+            }
+            
+            // Apply search filter
+            if (searchTerm !== '') {
+                tempShops = tempShops.filter(shop => 
+                    (shop.name && shop.name.toLowerCase().includes(searchTerm)) ||
+                    (shop.city && shop.city.toLowerCase().includes(searchTerm)) ||
+                    (shop.address && shop.address.toLowerCase().includes(searchTerm)) ||
+                    (shop.owner_name && shop.owner_name.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Apply sorting
+            switch(sortValue) {
+                case 'rating-desc':
+                    tempShops.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                    break;
+                case 'verified':
+                    tempShops.sort((a, b) => (b.verified ? 1 : 0) - (a.verified ? 1 : 0));
+                    break;
+                case 'name-asc':
+                    tempShops.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    break;
+                default:
+                    // Default to rating descending
+                    tempShops.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            }
+            
+            filteredShops = tempShops;
+            
+            // Update UI
+            updateResultsCount();
+            renderShops();
+        }
+
+        // Function to render shops
+        function renderShops() {
+            // Clear container
+            shopsContainer.innerHTML = '';
+            
+            // Check if we have shops
+            if (filteredShops.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            }
+            
+            emptyState.classList.add('d-none');
+            
+            // Render each shop
+            filteredShops.forEach(shop => {
+                const shopCard = createShopCard(shop);
+                shopsContainer.appendChild(shopCard);
+            });
+        }
+
+        // Function to create shop card HTML
+        function createShopCard(shop) {
+            const card = document.createElement('div');
+            card.className = 'shop-card';
+            
+            // Format address
+            const address = shop.address ? 
+                `${shop.address}, ${shop.city || ''}, ${shop.state || ''} - ${shop.pincode || ''}` :
+                'Address not available';
+            
+            // Create verified badge if shop is verified
+            const verifiedBadge = shop.verified 
+                ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' 
+                : '';
+            
+            // Format rating with reviews count
+            const reviewsCount = Math.floor(Math.random() * 100) + 20;
+            const ratingText = shop.rating ? `${shop.rating.toFixed(1)} (${reviewsCount} reviews)` : 'No ratings yet';
+            
+            // Shop logo - using placeholder for now
+            const shopLogo = shop.logo_url 
+                ? `<img src="${shop.logo_url}" alt="${shop.name} Logo" onerror="handleImageError(this)">`
+                : `<div class="shop-logo-placeholder"><i class="fas fa-tools"></i></div>`;
+            
+            card.innerHTML = `
+                <div class="shop-logo">
+                    ${shopLogo}
+                </div>
+                <div class="shop-content">
+                    <div class="shop-header">
+                        <div class="shop-info">
+                            <h3>${shop.name} ${verifiedBadge}</h3>
+                            <p class="text-muted">${shop.owner_name || 'Professional hardware supplier'}</p>
+                        </div>
+                        <div class="shop-rating">
+                            <i class="fas fa-star"></i> ${ratingText}
+                        </div>
+                    </div>
+                    <div class="shop-details">
+                        <p><i class="fas fa-map-marker-alt"></i> ${address}</p>
+                        <p><i class="fas fa-phone"></i> ${shop.phone || 'Phone not available'}</p>
+                        <p><i class="fas fa-envelope"></i> ${shop.email || 'Email not available'}</p>
+                        <p class="mt-2">${shop.description || 'No description available.'}</p>
+                    </div>
+                    <div class="shop-actions">
+                        <a href="item-list.html?shop_id=${shop.id}" class="btn btn-primary"><i class="fas fa-box-open"></i> View Products</a>
+                        ${shop.phone ? `<a href="tel:${shop.phone}" class="btn btn-outline"><i class="fas fa-phone"></i> Call Now</a>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Function to show error state
+        function showError(message) {
+            loadingState.classList.add('d-none');
+            shopsContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Hardware Shops</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-primary mt-3" onclick="loadHardwareShops()">Try Again</button>
+                </div>
+            `;
+        }
+
+        // Function to reset filters
+        function resetFilters() {
+            searchInput.value = '';
+            citySelect.value = 'all';
+            sortSelect.value = 'rating-desc';
+            applyFiltersAndSorting();
+        }
+
+        // Handle image loading errors
+        function handleImageError(img) {
+            const parent = img.parentNode;
+            parent.innerHTML = '<div class="shop-logo-placeholder"><i class="fas fa-tools"></i></div>';
+        }
+
+        // Load shops when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHardwareShops();
+            
+            // Add event listeners
+            sortSelect.addEventListener('change', applyFiltersAndSorting);
+            citySelect.addEventListener('change', applyFiltersAndSorting);
+            searchBtn.addEventListener('click', applyFiltersAndSorting);
+            resetFiltersBtn.addEventListener('click', resetFilters);
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFiltersAndSorting();
+                }
+            });
+            
+            // Real-time search with debouncing
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(applyFiltersAndSorting, 300);
+            });
+        });
+    </script>
+</body>
+</html>

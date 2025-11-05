@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details - KARIA MITRA</title>
+    
+    <!-- Google Web Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Stylesheet -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #0e1e55;
+            --primary-light: #bdc4c6;
+            --secondary-color: #f2b705;
+            --white: #ffffff;
+            --dark: #1a1a1a;
+            --light-bg: #f4f6f8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--dark);
+            background-color: #f5f5f5;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 12px 0;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            margin-right: 8px;
+        }
+
+        .cart-icon {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Page Header */
+        .page-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 25px 0;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        /* Item Details Section */
+        .item-details-section {
+            padding: 30px 0;
+        }
+        
+        .item-image-container {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+        
+        .item-image {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .item-info-container {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .item-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .item-brand {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .item-category {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .item-price-container {
+            margin-bottom: 20px;
+        }
+        
+        .item-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .item-original-price {
+            font-size: 1.2rem;
+            color: #999;
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+        
+        .item-discount {
+            background-color: #d32f2f;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .item-stock {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .in-stock {
+            color: #388e3c;
+            font-weight: 500;
+        }
+        
+        .out-of-stock {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .quantity-label {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .quantity-btn {
+            background: #f5f5f5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quantity-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: none;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            text-align: center;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        
+        .btn-primary:hover {
+            background-color: rgba(25, 118, 210, 0.9);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-outline-primary {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .item-description {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .description-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .back-button {
+            margin-bottom: 20px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(25, 118, 210, 0.3);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .error-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="home.html">
+                <i class="fas fa-hard-hat"></i> KARIA MITRA
+            </a>
+            <div class="d-flex align-items-center">
+                <a href="cart.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 id="item-name">Item Details</h1>
+            <p class="mb-0" id="item-category">Loading item information...</p>
+        </div>
+    </section>
+
+    <!-- Item Details Section -->
+    <section class="item-details-section">
+        <div class="container">
+            <div class="back-button">
+                <button onclick="goBack()" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Items
+                </button>
+            </div>
+            
+            <div id="item-details-container">
+                <!-- Loading state -->
+                <div class="loading" id="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading item details...</p>
+                </div>
+                
+                <!-- Error state (initially hidden) -->
+                <div class="error-state d-none" id="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Item</h3>
+                    <p id="error-message">Item not found or an error occurred.</p>
+                    <button class="btn btn-primary mt-3" onclick="loadItemDetails()">Try Again</button>
+                </div>
+                
+                <!-- Item details (initially hidden) -->
+                <div class="row d-none" id="item-details">
+                    <div class="col-lg-6">
+                        <div class="item-image-container">
+                            <img id="item-image" src="" alt="Item Image" class="item-image">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="item-info-container">
+                            <h1 id="item-name-display" class="item-name"></h1>
+                            <p id="item-brand" class="item-brand"></p>
+                            <p id="item-category-display" class="item-category"></p>
+                            
+                            <div class="item-price-container">
+                                <span id="item-price" class="item-price"></span>
+                                <span id="item-original-price" class="item-original-price d-none"></span>
+                                <span id="item-discount" class="item-discount d-none"></span>
+                            </div>
+                            
+                            <div class="item-stock">
+                                <span id="stock-status"></span>
+                            </div>
+                            
+                            <div class="quantity-selector">
+                                <span class="quantity-label">Quantity:</span>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" id="decrease-quantity">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="quantity-input" id="quantity-input" value="1" min="1">
+                                    <button class="quantity-btn" id="increase-quantity">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" id="add-to-cart-btn">
+                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                </button>
+                                <a href="cart.html" class="btn btn-outline-primary">
+                                    <i class="fas fa-shopping-cart"></i> View Cart
+                                </a>
+                            </div>
+                            
+                            <div class="item-description">
+                                <h3 class="description-title">Description</h3>
+                                <p id="item-description"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Supabase Integration -->
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tkdegywzonhbzdjfxosq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrZGVneXd6b25oYnpkamZ4b3NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzNzc0OTQsImV4cCI6MjA3Njk1MzQ5NH0.8M93KhrKWyxSacDwpebVElk6v3syDJCJElSs6O3NBoI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // DOM elements
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const itemDetails = document.getElementById('item-details');
+        const cartCountElement = document.getElementById('cartCount');
+        let currentItem = null;
+
+        // Function to get URL parameter
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Function to update cart count
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let totalQuantity = 0;
+            cart.forEach(item => {
+                totalQuantity += item.quantity;
+            });
+            
+            cartCountElement.textContent = totalQuantity;
+        }
+
+        // Function to show toast notification
+        function showToast(message) {
+            // Create toast element if it doesn't exist
+            let toast = document.getElementById('toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-notification';
+                toast.className = 'toast-notification';
+                document.body.appendChild(toast);
+            }
+            
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to load item details
+        async function loadItemDetails() {
+            const itemId = getUrlParameter('item_id');
+
+            if (!itemId) {
+                showError('No item specified. Please go back and select an item.');
+                return;
+            }
+
+            try {
+                // Show loading state
+                loadingState.classList.remove('d-none');
+                errorState.classList.add('d-none');
+                itemDetails.classList.add('d-none');
+
+                // Fetch item details from Supabase
+                const { data: item, error } = await supabase
+                    .from('items')
+                    .select('*')
+                    .eq('id', itemId)
+                    .single();
+
+                if (error) {
+                    console.error('Error fetching item:', error);
+                    showError('Failed to load item: ' + error.message);
+                    return;
+                }
+
+                if (!item) {
+                    showError('Item not found');
+                    return;
+                }
+
+                // Store current item
+                currentItem = item;
+
+                // Hide loading state and show item details
+                loadingState.classList.add('d-none');
+                itemDetails.classList.remove('d-none');
+
+                // Populate item details
+                document.getElementById('item-name').textContent = item.name;
+                document.getElementById('item-name-display').textContent = item.name;
+                document.getElementById('item-brand').textContent = item.brand || 'No brand specified';
+                document.getElementById('item-category').textContent = item.category || 'Uncategorized';
+                document.getElementById('item-category-display').textContent = item.category || 'Uncategorized';
+                
+                // Set image
+                const itemImage = document.getElementById('item-image');
+                if (item.image_url) {
+                    itemImage.src = item.image_url;
+                    itemImage.alt = item.name;
+                } else {
+                    itemImage.src = 'https://via.placeholder.com/500x400/1976D2/FFFFFF?text=No+Image';
+                    itemImage.alt = 'No image available';
+                }
+                
+                // Set price and discount
+                const finalPrice = item.discount > 0 
+                    ? (item.price - (item.price * item.discount / 100)).toFixed(2)
+                    : parseFloat(item.price).toFixed(2);
+                
+                document.getElementById('item-price').textContent = `₹${finalPrice}`;
+                
+                if (item.discount > 0) {
+                    document.getElementById('item-original-price').textContent = `₹${parseFloat(item.price).toFixed(2)}`;
+                    document.getElementById('item-original-price').classList.remove('d-none');
+                    document.getElementById('item-discount').textContent = `${item.discount}% OFF`;
+                    document.getElementById('item-discount').classList.remove('d-none');
+                }
+                
+                // Set stock status
+                const stockStatus = document.getElementById('stock-status');
+                if (item.stock > 0) {
+                    stockStatus.textContent = `In Stock (${item.stock} ${item.unit})`;
+                    stockStatus.className = 'in-stock';
+                    document.getElementById('add-to-cart-btn').disabled = false;
+                } else {
+                    stockStatus.textContent = 'Out of Stock';
+                    stockStatus.className = 'out-of-stock';
+                    document.getElementById('add-to-cart-btn').disabled = true;
+                }
+                
+                // Set description
+                document.getElementById('item-description').textContent = 
+                    item.description || 'No description available for this item.';
+
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                showError('An unexpected error occurred: ' + error.message);
+            }
+        }
+
+        // Function to show error state
+        function showError(message) {
+            loadingState.classList.add('d-none');
+            itemDetails.classList.add('d-none');
+            errorState.classList.remove('d-none');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // Function to add item to cart
+        function addToCart() {
+            if (!currentItem) return;
+            
+            const quantity = parseInt(document.getElementById('quantity-input').value);
+            
+            // Get existing cart from localStorage
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Check if item already exists in cart
+            const existingItemIndex = cart.findIndex(cartItem => cartItem.id === currentItem.id);
+            
+            if (existingItemIndex !== -1) {
+                // Update quantity if item exists
+                cart[existingItemIndex].quantity += quantity;
+            } else {
+                // Add new item to cart
+                cart.push({
+                    id: currentItem.id,
+                    name: currentItem.name,
+                    brand: currentItem.brand || 'Generic Brand',
+                    category: currentItem.category,
+                    price: parseFloat(currentItem.price),
+                    image: currentItem.image_url || 'https://via.placeholder.com/100x100?text=No+Image',
+                    quantity: quantity,
+                    shop_id: currentItem.shop_id
+                });
+            }
+            
+            // Save updated cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Update cart count in navbar
+            updateCartCount();
+            
+            // Show success message
+            showToast(`${currentItem.name} added to cart!`);
+        }
+
+        // Function to go back to previous page
+        function goBack() {
+            // Check if there's a valid previous page in browser history
+            if (document.referrer && document.referrer !== window.location.href) {
+                // Go to the previous page
+                window.location.href = document.referrer;
+            } else {
+                // If no referrer (e.g. direct open), fallback to default page
+                window.location.href = "constructionaggregate-itemlist.html";
+            }
+        }
+
+        // Load item details when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            loadItemDetails();
+            
+            // Add event listeners
+            document.getElementById('add-to-cart-btn').addEventListener('click', addToCart);
+            
+            document.getElementById('increase-quantity').addEventListener('click', function() {
+                const quantityInput = document.getElementById('quantity-input');
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+            });
+            
+            document.getElementById('decrease-quantity').addEventListener('click', function() {
+                const quantityInput = document.getElementById('quantity-input');
+                if (parseInt(quantityInput.value) > 1) {
+                    quantityInput.value = parseInt(quantityInput.value) - 1;
+                }
+            });
+            
+            document.getElementById('quantity-input').addEventListener('change', function() {
+                if (parseInt(this.value) < 1) {
+                    this.value = 1;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
